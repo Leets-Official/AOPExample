@@ -7,6 +7,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Aspect
 @Component
@@ -15,7 +17,7 @@ public class AuthAspect {
   @Around("@annotation(AuthRequired)")
   public Object checkAuth(ProceedingJoinPoint joinPoint) throws Throwable {
     // HttpServletRequest에서 Authorization 헤더 추출
-    HttpServletRequest httpServletRequest = (HttpServletRequest) joinPoint.getArgs()[0];
+    HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     Optional<String> extractedAuthHeader = extractAuthHeader(httpServletRequest);
 
     // Authorization 헤더가 없으면 인증되지 않은 유저이므로 예외 발생
